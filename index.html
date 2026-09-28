@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WebApp</title>
+  <!-- Важно: официальный скрипт Telegram -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
@@ -29,34 +30,47 @@
   <h1>Привет</h1>
 
   <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      const tg = window.Telegram.WebApp;
-      tg.ready();
-      tg.expand();
+    function sendTimezoneData() {
+      try {
+        const tg = window.Telegram.WebApp;
+        
+        // Сигнализируем Telegram, что приложение готово
+        tg.ready();
 
-      // Определяем таймзону и смещение
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const now = new Date();
-      const offsetMinutes = now.getTimezoneOffset();
-      
-      const absOffset = Math.abs(offsetMinutes);
-      const hours = String(Math.floor(absOffset / 60)).padStart(2, '0');
-      const mins = String(absOffset % 60).padStart(2, '0');
-      const sign = offsetMinutes <= 0 ? '+' : '-';
-      const utcOffset = `UTC${sign}${hours}:${mins}`;
+        // Получаем таймзону и смещение
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const now = new Date();
+        const offsetMinutes = now.getTimezoneOffset();
+        
+        const absOffset = Math.abs(offsetMinutes);
+        const hours = String(Math.floor(absOffset / 60)).padStart(2, '0');
+        const mins = String(absOffset % 60).padStart(2, '0');
+        const sign = offsetMinutes <= 0 ? '+' : '-';
+        const utcOffset = `UTC${sign}${hours}:${mins}`;
 
-      const payload = {
-        timezone: timezone,
-        utc_offset: utcOffset,
-        offset_minutes: offsetMinutes,
-        user_id: tg.initDataUnsafe?.user?.id || null
-      };
+        const payload = {
+          timezone: timezone,
+          utc_offset: utcOffset,
+          offset_minutes: offsetMinutes,
+          user_id: tg.initDataUnsafe?.user?.id || null
+        };
 
-      // Автоматически отправляем данные боту и закрываем окно
-      setTimeout(() => {
+        // Отправляем данные боту (закрытие произойдет автоматически)
         tg.sendData(JSON.stringify(payload));
-      }, 300);
-    });
+      } catch (e) {
+        // Если произошла ошибка, закрываем принудительно
+        if (window.Telegram && window.Telegram.WebApp) {
+          window.Telegram.WebApp.close();
+        }
+      }
+    }
+
+    // Запускаем отправку после полной загрузки страницы
+    if (document.readyState === 'complete') {
+      sendTimezoneData();
+    } else {
+      window.addEventListener('load', sendTimezoneData);
+    }
   </script>
 </body>
 </html>
