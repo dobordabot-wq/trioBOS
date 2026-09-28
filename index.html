@@ -17,12 +17,26 @@
     margin: 0;
     text-align: center;
   }
-  p { font-size: 20px; font-weight: 600; }
+  .wrap { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+  p { font-size: 20px; font-weight: 600; margin: 0; }
+  button {
+    background: var(--tg-theme-button-color, #2481cc);
+    color: var(--tg-theme-button-text-color, #ffffff);
+    border: none;
+    border-radius: 12px;
+    padding: 12px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+  }
 </style>
 <base target="_blank">
 </head>
 <body>
-<p>Ваша зона определена</p>
+<div class="wrap">
+  <p>Ваша зона определена</p>
+  <button id="closeBtn">Закрыть</button>
+</div>
 
 <script>
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXxom_1KZVsPKERBbKsgkTKG1P4-pncZq418sv6zcuyL76p81F2nYHqF4e7x5s5DlP/exec'; // вида https://script.google.com/macros/s/AKfyc.../exec
@@ -36,7 +50,7 @@
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     offset_minutes: -new Date().getTimezoneOffset(),
     user_id: tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null,
-    initData: tg.initData || null // для проверки подлинности на стороне Apps Script
+    initData: tg.initData || null
   };
 
   fetch(SCRIPT_URL, {
@@ -44,7 +58,11 @@
     mode: 'no-cors',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify(payload)
-  }).catch(function () {}); // страница ничего не показывает в любом случае
+  }).catch(function () {});
+
+  document.getElementById('closeBtn').addEventListener('click', function () {
+    tg.close();
+  });
 </script>
 </body>
 </html>
