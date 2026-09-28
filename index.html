@@ -1,76 +1,93 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WebApp</title>
-  <!-- Важно: официальный скрипт Telegram -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: var(--tg-theme-bg-color, #ffffff);
-      color: var(--tg-theme-text-color, #000000);
-    }
-    h1 {
-      font-size: 28px;
-      font-weight: 500;
-      margin: 0;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Определение таймзоны</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--tg-theme-bg-color, #ffffff);
+    color: var(--tg-theme-text-color, #000000);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+    text-align: center;
+  }
+  .card {
+    background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+    border-radius: 16px;
+    padding: 30px;
+    max-width: 340px;
+    width: 100%;
+  }
+  h2 { margin-top: 0; }
+  .tz {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--tg-theme-button-color, #2481cc);
+    margin: 12px 0;
+  }
+  .offset { font-size: 14px; opacity: 0.7; margin-bottom: 20px; }
+  button {
+    background: var(--tg-theme-button-color, #2481cc);
+    color: var(--tg-theme-button-text-color, #ffffff);
+    border: none;
+    border-radius: 12px;
+    padding: 14px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    width: 100%;
+    cursor: pointer;
+  }
+  button:disabled { opacity: 0.6; cursor: default; }
+  .done { color: #2ecc71; font-weight: 600; margin-top: 16px; display: none; }
+</style>
+<base target="_blank">
 </head>
 <body>
+<div class="card">
+  <h2 id="title">⏳ Определяем тайм зону...</h2>
+  <div class="tz" id="tzName"></div>
+  <div class="offset" id="tzOffset"></div>
+  <button id="sendBtn" style="display:none">✅ Подтвердить и отправить</button>
+  <div class="done" id="doneMsg">Данные отправлены боту</div>
+</div>
 
-  <h1>Привет2</h1>
+<script>
+  const tg = window.Telegram.WebApp;
+  tg.ready();
+  tg.expand();
 
-  <script>
-    function sendTimezoneData() {
-      try {
-        const tg = window.Telegram.WebApp;
-        
-        // Сигнализируем Telegram, что приложение готово
-        tg.ready();
+  // Определяем таймзону устройства
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const offsetMin = -new Date().getTimezoneOffset(); // в минутах относительно UTC
 
-        // Получаем таймзону и смещение
-        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const now = new Date();
-        const offsetMinutes = now.getTimezoneOffset();
-        
-        const absOffset = Math.abs(offsetMinutes);
-        const hours = String(Math.floor(absOffset / 60)).padStart(2, '0');
-        const mins = String(absOffset % 60).padStart(2, '0');
-        const sign = offsetMinutes <= 0 ? '+' : '-';
-        const utcOffset = `UTC${sign}${hours}:${mins}`;
+  document.getElementById('title').textContent = 'Ваша тайм зона определена';
+  document.getElementById('tzName').textContent = tz;
+  const sign = offsetMin >= 0 ? '+' : '−';
+  document.getElementById('tzOffset').textContent =
+    'UTC' + sign + String(Math.abs(offsetMin) / 60).replace('.', ':');
+  const btn = document.getElementById('sendBtn');
+  btn.style.display = 'block';
 
-        const payload = {
-          timezone: timezone,
-          utc_offset: utcOffset,
-          offset_minutes: offsetMinutes,
-          user_id: tg.initDataUnsafe?.user?.id || null
-        };
-
-        // Отправляем данные боту (закрытие произойдет автоматически)
-        tg.sendData(JSON.stringify(payload));
-      } catch (e) {
-        // Если произошла ошибка, закрываем принудительно
-        if (window.Telegram && window.Telegram.WebApp) {
-          window.Telegram.WebApp.close();
-        }
-      }
-    }
-
-    // Запускаем отправку после полной загрузки страницы
-    if (document.readyState === 'complete') {
-      sendTimezoneData();
-    } else {
-      window.addEventListener('load', sendTimezoneData);
-    }
-  </script>
+  btn.addEventListener('click', () => {
+    const payload = {
+      type: 'timezone',
+      timezone: tz,
+      offset_minutes: offsetMin,
+      user_id: tg.initDataUnsafe?.user?.id || null
+    };
+    tg.sendData(JSON.stringify(payload));
+    btn.disabled = true;
+    document.getElementById('doneMsg').style.display = 'block';
+  });
+</script>
 </body>
 </html>
