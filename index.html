@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebApp</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--tg-theme-bg-color, #ffffff);
+      color: var(--tg-theme-text-color, #000000);
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 500;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Привет</h1>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const tg = window.Telegram.WebApp;
+      tg.ready();
+      tg.expand();
+
+      // Определяем таймзону и смещение
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const now = new Date();
+      const offsetMinutes = now.getTimezoneOffset();
+      
+      const absOffset = Math.abs(offsetMinutes);
+      const hours = String(Math.floor(absOffset / 60)).padStart(2, '0');
+      const mins = String(absOffset % 60).padStart(2, '0');
+      const sign = offsetMinutes <= 0 ? '+' : '-';
+      const utcOffset = `UTC${sign}${hours}:${mins}`;
+
+      const payload = {
+        timezone: timezone,
+        utc_offset: utcOffset,
+        offset_minutes: offsetMinutes,
+        user_id: tg.initDataUnsafe?.user?.id || null
+      };
+
+      // Автоматически отправляем данные боту и закрываем окно
+      setTimeout(() => {
+        tg.sendData(JSON.stringify(payload));
+      }, 300);
+    });
+  </script>
+</body>
+</html>
