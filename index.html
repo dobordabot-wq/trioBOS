@@ -35,6 +35,13 @@
   }
   ul, ol { margin: 0; padding-left: 20px; }
   li { margin-bottom: 6px; font-size: 14px; }
+  .note {
+    margin: 18px 0 0;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: rgba(36, 129, 204, 0.1);
+    font-size: 14px;
+  }
   button {
     display: block;
     margin: 24px auto 0;
@@ -69,29 +76,29 @@
     <li>Опоздания: время встречи не продлевается при опоздании. При задержке более чем на 10 минут встреча аннулируется.</li>
   </ol>
 
+  <p class="note">Для оформления записи бот попросит вас указать <b>имя</b> и <b>номер телефона</b> для связи.</p>
+
   <button id="closeBtn">Закрыть</button>
 </div>
 
 <script>
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXxom_1KZVsPKERBbKsgkTKG1P4-pncZq418sv6zcuyL76p81F2nYHqF4e7x5s5DlP/exec'; // вида https://script.google.com/macros/s/AKfyc.../exec
+  const SCRIPT_URL = 'ВСТАВЬТЕ_URL_APPS_SCRIPT'; // вида https://script.google.com/macros/s/AKfyc.../exec
 
   const tg = window.Telegram.WebApp;
   tg.ready();
   tg.expand();
 
-  const payload = {
-    type: 'timezone',
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    offset_minutes: -new Date().getTimezoneOffset(),
-    user_id: tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null,
-    initData: tg.initData || null
-  };
-
   fetch(SCRIPT_URL, {
     method: 'POST',
     mode: 'no-cors',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify(payload)
+    body: JSON.stringify({
+      type: 'timezone',
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      offset_minutes: -new Date().getTimezoneOffset(),
+      user_id: tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null,
+      initData: tg.initData || null
+    })
   }).catch(function () {});
 
   document.getElementById('closeBtn').addEventListener('click', function () {
