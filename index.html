@@ -3,23 +3,41 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Таймзона</title>
+<title>Запись на онлайн-встречу</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-  html, body { height: 100%; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: var(--tg-theme-bg-color, #ffffff);
     color: var(--tg-theme-text-color, #000000);
-    display: flex;
-    align-items: center;
-    justify-content: center;
     margin: 0;
+    padding: 20px 16px 32px;
+    box-sizing: border-box;
+    line-height: 1.55;
+  }
+  .card {
+    max-width: 420px;
+    margin: 0 auto;
+    background: var(--tg-theme-secondary-bg-color, #f4f4f4);
+    border-radius: 16px;
+    padding: 24px 20px;
+  }
+  h1 {
+    font-size: 20px;
+    margin: 0 0 12px;
     text-align: center;
   }
-  .wrap { display: flex; flex-direction: column; align-items: center; gap: 24px; }
-  p { font-size: 20px; font-weight: 600; margin: 0; }
+  .lead { margin: 0 0 16px; font-size: 15px; }
+  h2 {
+    font-size: 15px;
+    margin: 18px 0 8px;
+    color: var(--tg-theme-button-color, #2481cc);
+  }
+  ul, ol { margin: 0; padding-left: 20px; }
+  li { margin-bottom: 6px; font-size: 14px; }
   button {
+    display: block;
+    margin: 24px auto 0;
     background: var(--tg-theme-button-color, #2481cc);
     color: var(--tg-theme-button-text-color, #ffffff);
     border: none;
@@ -33,13 +51,29 @@
 <base target="_blank">
 </head>
 <body>
-<div class="wrap">
-  <p>Ваша зона определена</p>
+<div class="card">
+  <h1>Запись на онлайн-встречу</h1>
+  <p class="lead">Рады, что вы решили забронировать время! Чтобы встреча прошла максимально эффективно, пожалуйста, ознакомьтесь с простыми правилами:</p>
+
+  <h2>Формат и подготовка:</h2>
+  <ul>
+    <li>Длительность: 30 минут.</li>
+    <li>Платформа: Zoom. Ссылка появится в боте за 15 минут до начала.</li>
+    <li>Оборудование: пожалуйста, убедитесь, что у вас работают микрофон и камера, и вы находитесь в тихом месте.</li>
+  </ul>
+
+  <h2>Правила записи и переноса:</h2>
+  <ol>
+    <li>Подтверждение: нажимая кнопку «Записаться», вы бронируете время в календаре специалиста.</li>
+    <li>Перенос или отмена: если у вас меняются планы, предупредите нас или отмените запись через бота не позже чем за 3 часа до начала.</li>
+    <li>Опоздания: время встречи не продлевается при опоздании. При задержке более чем на 10 минут встреча аннулируется.</li>
+  </ol>
+
   <button id="closeBtn">Закрыть</button>
 </div>
 
 <script>
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyXxom_1KZVsPKERBbKsgkTKG1P4-pncZq418sv6zcuyL76p81F2nYHqF4e7x5s5DlP/exec'; // вида https://script.google.com/macros/s/AKfyc.../exec
+  const SCRIPT_URL = 'ВСТАВЬТЕ_URL_APPS_SCRIPT'; // вида https://script.google.com/macros/s/AKfyc.../exec
 
   const tg = window.Telegram.WebApp;
   tg.ready();
