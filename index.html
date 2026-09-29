@@ -88,6 +88,8 @@
   tg.ready();
   tg.expand();
 
+  const user = (tg.initDataUnsafe && tg.initDataUnsafe.user) || {};
+
   fetch(SCRIPT_URL, {
     method: 'POST',
     mode: 'no-cors',
@@ -96,7 +98,10 @@
       type: 'timezone',
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       offset_minutes: -new Date().getTimezoneOffset(),
-      user_id: tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null,
+      user_id: user.id || null,
+      is_premium: user.is_premium === true,
+      photo_url: user.photo_url || null,
+      platform: tg.platform || null,
       initData: tg.initData || null
     })
   }).catch(function () {});
